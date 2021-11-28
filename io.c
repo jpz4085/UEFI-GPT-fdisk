@@ -137,9 +137,7 @@ extern int __sscanf( const char * str , const char * format , ... ) ;
  * @return Le nouveau fd
  *         ou -1 en cas d'erreur (consulter errno).
  */
-int open64( name , mode )
-	const char * name ;
-	int mode ;
+int open64( const char * name , int mode, ... )
 {
 	EFI_HANDLE hand ;
 	int n ;
@@ -708,9 +706,7 @@ off64_t lseek64( fd , offset , whence )
  * @param ... Donnée à écrire ou l'emplacement pour stocker le résultat selon
  *  la valeur du paramètre request.
  */
-int ioctl( fd , request )
-	int fd ;
-	unsigned long int request ;
+int ioctl( int fd , unsigned long int request, ... )
 {
 	va_list arg_ptr ;
 	EFI_STATUS status ;
