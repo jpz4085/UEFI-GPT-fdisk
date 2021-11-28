@@ -29,6 +29,7 @@
 #include "dietwarning.h"
 
 #pragma GCC diagnostic ignored "-Wunused-but-set-variable"
+#pragma GCC diagnostic ignored "-Wimplicit-fallthrough"
 
 /* __ctype_b_loc return the address in the image
    not the address in memory : crash guaranteed

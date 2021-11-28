@@ -29,6 +29,8 @@
 #include "dietwarning.h"
 
 #define MAX_WIDTH 10*1024
+#pragma GCC diagnostic ignored "-Wimplicit-fallthrough"
+#pragma GCC diagnostic ignored "-Wmisleading-indentation"
 
 static unsigned long skip_to(const char *format) {
   unsigned long nr;
