@@ -113,9 +113,9 @@ int __stdin_is_tty(void);
 /* Bernard added a few more */
 
 extern int __vfprintf_chk( FILE * __stream , int __flag ,
-                           const char * __format , _G_va_list __ap ) ;
+                           const char * __format , __gnuc_va_list __ap ) ;
 
 extern int __vsnprintf_chk( char * __s , size_t __n , int __flag ,
                             size_t __slen , const char * __format ,
-                            _G_va_list __ap ) ;
+                            __gnuc_va_list __ap ) ;
 
