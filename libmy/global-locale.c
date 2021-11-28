@@ -14,6 +14,7 @@
  * La diffusion de ce code est faite selon les termes de la GPL GNU version 2.
  */
 
+#define _GNU_SOURCE
 #define _XOPEN_SOURCE 600
 #include "libmy.h"
 #include "libc-tsd.h"
