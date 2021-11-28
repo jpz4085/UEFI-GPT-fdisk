@@ -23,7 +23,7 @@
 int
 gettimeofday( tv , tz )
 	struct timeval *tv __attribute__(( unused )) ;
-	struct timezone *tz __attribute__(( unused )) ;
+	void *tz __attribute__(( unused )) ;
 {
 	/* TODO: ? */
 	__fortify_fail( "gettimeofday()" ) ;
