@@ -27,7 +27,7 @@
 
 
 # Name of the directory where GNU EFI is built.
-GNUEFI = gnu-efi-3.0.3
+GNUEFI = $(shell ls -d gnu-efi-*)
 
 # Debug this code. This should make the code be verbose or not depending
 # on the value of the UEFI firmware variable EFIDebug.
