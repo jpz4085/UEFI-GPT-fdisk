@@ -17,7 +17,6 @@
 #define _XOPEN_SOURCE 600
 #include "libmy.h"
 #include <stdio.h>
-#include <libio.h>
 #include <unistd.h>
 
 #ifdef getc
