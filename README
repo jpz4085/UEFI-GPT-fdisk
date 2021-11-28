@@ -1,6 +1,11 @@
 
 UEFI GPT fdisk: aka gdisk.efi by Bub'soft.
 Build of GPT fdisk for UEFI BIOS environments.
+Original: https://sourceforge.net/projects/uefigptfdisk/
+
+Version 0.5.1 - November 2021
+Compatible with GCC5 and GPT fdisk >= 1.0.5
+
 Version 0.5 november 2015.
 Version <1 means it's pretty much beta software like GPT fdisk in fact.
 
