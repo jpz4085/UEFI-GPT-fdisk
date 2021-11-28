@@ -71,7 +71,6 @@ char* nl_langinfo(nl_item x) {
   }
 }
 
-#if 0
 char * __nl_langinfo_l( item , locale )
         nl_item item ;
         __locale_t locale __attribute__((unused)) ;
@@ -79,11 +78,4 @@ char * __nl_langinfo_l( item , locale )
         /* TODO: ? */
         return nl_langinfo( item ) ;
 }
-#endif
-
-char* __nl_langinfo_l( nl_item , __locale_t )
-	__attribute__((weak, alias("nl_langinfo"))) ;
-
-char* nl_langinfo_l( nl_item , __locale_t )
-	__attribute__((weak, alias("nl_langinfo"))) ;
 
