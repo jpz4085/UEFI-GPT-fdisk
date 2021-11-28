@@ -1,0 +1,100 @@
+
+UEFI GPT fdisk: aka gdisk.efi by Bub'soft.
+Build of GPT fdisk for UEFI BIOS environments.
+Version 0.5 november 2015.
+Version <1 means it's pretty much beta software like GPT fdisk in fact.
+
+First attempt by Bernard Burette <bernard at burette dot net> january 2014.
+
+This is a build of GPT fdisk for UEFI. You should be able to register it as
+a boot-program in the UEFI or run it from the UEFI Shell if you system has
+one. Anyway this executable image should be copied to the EFI System
+Partition (aka EFI SP or Partition type 0xEF) to be permanently available. You
+also have the option of copying it to a USB storage and invoke the UEFI Shell
+then navigate ("fs1:", "cd xx", etc.) to your key to run it from there.
+
+Unlike the original GPT fdisk "gdisk", this program accepts no options in its
+command line. When you run it, it prints a list of all detected hard disks
+each with a name like EFI_HANDLE(<hex_number>) and if more than one is found
+lets you choose which one you want to review/edit.
+
+Also the commands to backup the partition table to disk (b option in main
+menu) and to load the partition table from a backup file (l option in recovery
+menu) do not work (yet). I need to write the code to read from and write to a
+file in pure UEFI first.
+
+Apart from that all functions should operate properly. Refer to GPT fdisk
+manual for more information on how to use this program:
+http://www.rodsbooks.com/gdisk/
+
+
+To successfully build UEFI GPT fdisk, you will additional packages:
+- GPT fdisk, the original code can be found at:
+  http://sourceforge.net/projects/gptfdisk/
+  GPT fdisk needs g++ and additional libraries as well: check it's README.
+- GNU-EFI library, can be found at:
+  http://sourceforge.net/projects/gnu-efi/
+
+Unpack the sources from GPT fdisk to a location you like, it will create a
+subdirectory containing all its stuff. Then go inside this subdirectory (for
+example ~/gptfdisk.1.0.0) and there unpack *this* package, it will create
+a new subdirectory (for example ~/gptfdisk.1.0.0/uefi-0.5) where you will
+actually build the UEFI version of GPT fdisk. You now need to unpack GNU-EFI
+package in this build directory, it will once again create its own
+subdirectory (for example ~/gptfdisk.1.0.0/uefi-0.5/gnu-efi-3.0.3).
+
+Depending on the version of GTP fdisk you use you need to patch some files
+or not (GPT fdisk author has incorporated my changes in version after 0.8.10).
+If you use version 0.8.10 or lower of GPT fdisk, there is a small patch to be
+applied to GPT fdisk sources, the "PATCH.sh" script was written for that. The
+program won't compile if you don't apply the patch to file "gpt.cc" and it
+won't display the partition sizes in IEEE values if you don't patch the file
+"support.cc". Note that since these patches are now included in GPT fdisk main
+branch, the patch script shell will be removed in future revisions.
+
+Now your current directory should still be ~/gptfdisk.1.0.0/uefi-0.5, so
+just enter "make" and voilà!
+
+
+A few things to know:
+- We use GNU-EFI version 3.0.3 but any version around 3.x and hopefully newer
+  versions should work as well, you must adjust the directory name in the
+  Makefile when needed.
+- We link against "libstdc++" - which at least for Ubuntu *was* compiled with
+  option _GLIBCXX_USE_WCHAR_T - when we only use UTF-8: this adds a lot of
+  useless bloat to the program. But only a full rewrite of GPT fdisk in plain
+  C could alleviate this.
+- No 32 bits stuff has been done (is it still necessary nowadays?) the GNU-EFI
+  library can be compiled in both 32 bits and 64 bits but this program
+  will at the very least miss the start-up code "start-ia32.S" and the
+  relocation management code "relocate-ia32.c", feel free to help me if you
+  think this is a necessity.
+- We use a hand-made version of the standard "libc" because the linux one
+  embeds system calls to the kernel (we don't want them because EFI has
+  nothing to do with Linux kernel), this library is mostly built from bits
+  copied from "dietlibc" but since GNU libstdc++ also calls __newlocale() some
+  other bits were copied from "glibc" (version 2.18 at the time of this
+  writing). This private "libc" library is called "libmy.a" and is built in
+  the "libmy/" subdirectory.
+- We build these library files using 2 bytes wchar_t because EFI is UTF-16,
+  still gdisk uses UTF-8 internally so it doesn't need any other UTF-xx and
+  our glue functions hand code conversions from UTF-8 to EFI UTF-16: this
+  might not work in all languages.
+- As written before the UEFI functions don't include directory and file
+  management so the parts of GPT fdisk for backup to file and recovery from
+  file don't work at all (the open() function returns EINVAL and GPT fdisk
+  will display an error).
+- No C++ exception is handled here. The stack unwinding is tricky to implement
+  and fortunately GPT fdisk does not use exceptions at all.
+- For all the system calls from the standard libray we build EFI versions
+  of functions like write(), read() and so on, all these functions are in the
+  ".c" source files in this "." directory, not in "libmy/" subdirectory.
+- We have added a "dynamic_cast.c" module that doesn't check anything because
+  the code should be fully debugged for all use cases and using libstdc++
+  doesn't work the way it should (remember we don't do C++ exceptions here, so
+  throwing a "bad_cast" would crash the program with no explanation).
+- In version 0.5 some libmy.a files have been updated to compile with version
+  5.x of GCC, as this is the version packaged with most recent Ubuntu 15.10
+  you need around 20 MiB of free disk space to build everything, the gdisk.efi
+  programm itself is a little more than 1 MiB since GCC 5.2.
+

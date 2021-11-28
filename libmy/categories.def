@@ -1,0 +1,132 @@
+/*
+ * This file is part of UEFI GPT fdisk.
+ *
+ * UEFI GPT fdisk is a port of GPT fdisk to UEFI/BIOS.
+ * UEFI GPT fdisk est un portage de GPT fdisk vers UEFI/BIOS.
+ * Ce fichier a été initié par Bernard Burette en janvier 2014.
+ * Ce fichier est récupéré soit de "GNU libc" soit de "dietlibc"
+ * soit encore il a été créé de toutes pièces.
+ *
+ * All this work is copyleft Bernard Burette.
+ * Gauche d'auteur Bernard Burette.
+ *
+ * This program is distributed under the terms of the GNU GPL version 2.
+ * La diffusion de ce code est faite selon les termes de la GPL GNU version 2.
+ */
+
+/* Definition of all available locale categories and their items.  -*- C -*-
+   Copyright (C) 1995-2013 Free Software Foundation, Inc.
+   This file is part of the GNU C Library.
+
+   The GNU C Library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Lesser General Public
+   License as published by the Free Software Foundation; either
+   version 2.1 of the License, or (at your option) any later version.
+
+   The GNU C Library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Lesser General Public License for more details.
+
+   You should have received a copy of the GNU Lesser General Public
+   License along with the GNU C Library; if not, see
+   <http://www.gnu.org/licenses/>.  */
+
+/* These definitions are used by the locale-related files in the C library
+   and the programs `localedef' and `locale'.
+
+   The general format of the descriptions is like this:
+
+     DEFINE_CATEGORY (ID, name, ( items ), setlocale-postload)
+
+   where items itself is an array of entries in the form
+
+     { ID, name, standard, value-type, min, max }
+
+   The usage of the load, check, output functions depends on the individual
+   program code which loads this file.
+
+   The various value types for the items are `string', `stringarray', `byte'
+   `bytearray', and `word'.  These cover all possible values in the current
+   locale definitions.  `min' and `max' can be individually used again.  */
+
+#ifndef NO_POSTLOAD
+#define NO_POSTLOAD NULL
+#endif
+
+/* The actual definition of ctype is meaningless here.  It is hard coded in
+   the code because it has to be handled very specially.  Only the names of
+   the functions and the value types are important.  */
+DEFINE_CATEGORY
+(
+ LC_CTYPE, "LC_CTYPE",
+ (
+  DEFINE_ELEMENT (_NL_CTYPE_CLASS,	  "ctype-class",        std, wstring)
+  DEFINE_ELEMENT (_NL_CTYPE_TOUPPER,      "ctype-toupper",      std, wstring)
+  DEFINE_ELEMENT (_NL_CTYPE_TOLOWER,      "ctype-tolower",      std, wstring)
+/*
+  DEFINE_ELEMENT (_NL_CTYPE_CLASS32,      "ctype-class32",      std, wstring)
+  DEFINE_ELEMENT (_NL_CTYPE_CLASS_NAMES,  "ctype-class-names",  std, stringlist, 10, 32)
+  DEFINE_ELEMENT (_NL_CTYPE_MAP_NAMES,	  "ctype-map-names",    std, stringlist, 2, 32)
+  DEFINE_ELEMENT (_NL_CTYPE_WIDTH,	  "ctype-width",        std, bytearray)
+  DEFINE_ELEMENT (_NL_CTYPE_MB_CUR_MAX,	  "ctype-mb-cur-max",   std, word)
+  DEFINE_ELEMENT (_NL_CTYPE_CODESET_NAME, "charmap",		std, string)
+  DEFINE_ELEMENT (_NL_CTYPE_TOUPPER32,    "ctype-toupper32",    std, wstring)
+  DEFINE_ELEMENT (_NL_CTYPE_TOLOWER32,    "ctype-tolower32",    std, wstring)
+  DEFINE_ELEMENT (_NL_CTYPE_CLASS_OFFSET, "ctype-class-offset", std, word)
+  DEFINE_ELEMENT (_NL_CTYPE_MAP_OFFSET,   "ctype-map-offset",   std, word)
+  DEFINE_ELEMENT (_NL_CTYPE_INDIGITS_MB_LEN, "ctype-indigits_mb-len", std, word)
+  DEFINE_ELEMENT (_NL_CTYPE_INDIGITS0_MB, "ctype-indigits0_mb", std, string)
+  DEFINE_ELEMENT (_NL_CTYPE_INDIGITS1_MB, "ctype-indigits1_mb", std, string)
+  DEFINE_ELEMENT (_NL_CTYPE_INDIGITS2_MB, "ctype-indigits2_mb", std, string)
+  DEFINE_ELEMENT (_NL_CTYPE_INDIGITS3_MB, "ctype-indigits3_mb", std, string)
+  DEFINE_ELEMENT (_NL_CTYPE_INDIGITS4_MB, "ctype-indigits4_mb", std, string)
+  DEFINE_ELEMENT (_NL_CTYPE_INDIGITS5_MB, "ctype-indigits5_mb", std, string)
+  DEFINE_ELEMENT (_NL_CTYPE_INDIGITS6_MB, "ctype-indigits6_mb", std, string)
+  DEFINE_ELEMENT (_NL_CTYPE_INDIGITS7_MB, "ctype-indigits7_mb", std, string)
+  DEFINE_ELEMENT (_NL_CTYPE_INDIGITS8_MB, "ctype-indigits8_mb", std, string)
+  DEFINE_ELEMENT (_NL_CTYPE_INDIGITS9_MB, "ctype-indigits9_mb", std, string)
+  DEFINE_ELEMENT (_NL_CTYPE_INDIGITS_WC_LEN, "ctype-indigits_wc-len", std, word)
+  DEFINE_ELEMENT (_NL_CTYPE_INDIGITS0_WC, "ctype-indigits0_wc", std, wstring)
+  DEFINE_ELEMENT (_NL_CTYPE_INDIGITS1_WC, "ctype-indigits1_wc", std, wstring)
+  DEFINE_ELEMENT (_NL_CTYPE_INDIGITS2_WC, "ctype-indigits2_wc", std, wstring)
+  DEFINE_ELEMENT (_NL_CTYPE_INDIGITS3_WC, "ctype-indigits3_wc", std, wstring)
+  DEFINE_ELEMENT (_NL_CTYPE_INDIGITS4_WC, "ctype-indigits4_wc", std, wstring)
+  DEFINE_ELEMENT (_NL_CTYPE_INDIGITS5_WC, "ctype-indigits5_wc", std, wstring)
+  DEFINE_ELEMENT (_NL_CTYPE_INDIGITS6_WC, "ctype-indigits6_wc", std, wstring)
+  DEFINE_ELEMENT (_NL_CTYPE_INDIGITS7_WC, "ctype-indigits7_wc", std, wstring)
+  DEFINE_ELEMENT (_NL_CTYPE_INDIGITS8_WC, "ctype-indigits8_wc", std, wstring)
+  DEFINE_ELEMENT (_NL_CTYPE_INDIGITS9_WC, "ctype-indigits9_wc", std, wstring)
+  DEFINE_ELEMENT (_NL_CTYPE_OUTDIGIT0_MB, "ctype-outdigit0_mb", std, string)
+  DEFINE_ELEMENT (_NL_CTYPE_OUTDIGIT1_MB, "ctype-outdigit1_mb", std, string)
+  DEFINE_ELEMENT (_NL_CTYPE_OUTDIGIT2_MB, "ctype-outdigit2_mb", std, string)
+  DEFINE_ELEMENT (_NL_CTYPE_OUTDIGIT3_MB, "ctype-outdigit3_mb", std, string)
+  DEFINE_ELEMENT (_NL_CTYPE_OUTDIGIT4_MB, "ctype-outdigit4_mb", std, string)
+  DEFINE_ELEMENT (_NL_CTYPE_OUTDIGIT5_MB, "ctype-outdigit5_mb", std, string)
+  DEFINE_ELEMENT (_NL_CTYPE_OUTDIGIT6_MB, "ctype-outdigit6_mb", std, string)
+  DEFINE_ELEMENT (_NL_CTYPE_OUTDIGIT7_MB, "ctype-outdigit7_mb", std, string)
+  DEFINE_ELEMENT (_NL_CTYPE_OUTDIGIT8_MB, "ctype-outdigit8_mb", std, string)
+  DEFINE_ELEMENT (_NL_CTYPE_OUTDIGIT9_MB, "ctype-outdigit9_mb", std, string)
+  DEFINE_ELEMENT (_NL_CTYPE_OUTDIGIT0_WC, "ctype-outdigit0_wc", std, word)
+  DEFINE_ELEMENT (_NL_CTYPE_OUTDIGIT1_WC, "ctype-outdigit1_wc", std, word)
+  DEFINE_ELEMENT (_NL_CTYPE_OUTDIGIT2_WC, "ctype-outdigit2_wc", std, word)
+  DEFINE_ELEMENT (_NL_CTYPE_OUTDIGIT3_WC, "ctype-outdigit3_wc", std, word)
+  DEFINE_ELEMENT (_NL_CTYPE_OUTDIGIT4_WC, "ctype-outdigit4_wc", std, word)
+  DEFINE_ELEMENT (_NL_CTYPE_OUTDIGIT5_WC, "ctype-outdigit5_wc", std, word)
+  DEFINE_ELEMENT (_NL_CTYPE_OUTDIGIT6_WC, "ctype-outdigit6_wc", std, word)
+  DEFINE_ELEMENT (_NL_CTYPE_OUTDIGIT7_WC, "ctype-outdigit7_wc", std, word)
+  DEFINE_ELEMENT (_NL_CTYPE_OUTDIGIT8_WC, "ctype-outdigit8_wc", std, word)
+  DEFINE_ELEMENT (_NL_CTYPE_OUTDIGIT9_WC, "ctype-outdigit9_wc", std, word)
+  DEFINE_ELEMENT (_NL_CTYPE_TRANSLIT_TAB_SIZE, "ctype-translit-tab-size", std, word)
+  DEFINE_ELEMENT (_NL_CTYPE_TRANSLIT_FROM_IDX, "ctype-translit-from-idx", std, wstring)
+  DEFINE_ELEMENT (_NL_CTYPE_TRANSLIT_FROM_TBL, "ctype-translit-from-tbl", std, wstring)
+  DEFINE_ELEMENT (_NL_CTYPE_TRANSLIT_TO_IDX, "ctype-translit-to-idx", std, wstring)
+  DEFINE_ELEMENT (_NL_CTYPE_TRANSLIT_TO_TBL, "ctype-translit-to-tbl", std, wstring)
+  DEFINE_ELEMENT (_NL_CTYPE_TRANSLIT_DEFAULT_MISSING_LEN, "ctype-translit-default-missing-len", std, word)
+  DEFINE_ELEMENT (_NL_CTYPE_TRANSLIT_DEFAULT_MISSING, "ctype-translit-default-missing", std, wstring)
+  DEFINE_ELEMENT (_NL_CTYPE_TRANSLIT_IGNORE_LEN, "ctype-translit-ignore-len", std, word)
+  DEFINE_ELEMENT (_NL_CTYPE_TRANSLIT_IGNORE, "ctype-translit-ignore", std, string)
+  DEFINE_ELEMENT (_NL_CTYPE_MAP_TO_NONASCII, "map-to-nonascii", std, word)
+*/
+  ), _nl_postload_ctype)
+

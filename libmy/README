@@ -1,0 +1,35 @@
+
+UEFI GPT fdisk: aka gdisk.efi by Bub'soft.
+Build of GPT fdisk for UEFI BIOS environments.
+Version 0.3 april 2014.
+Version <1 means it's pretty much beta software like GPT fdisk in fact.
+
+First attempt by Bernard Burette <bernard at burette dot net> january 2014.
+
+This is a reduced version of libc.so for UEFI.
+
+
+This library is linked to UEFI GPT fdisk in replacement for the standard C
+library. GPT fdisk is written in C++ and the UEFI version is linked with
+-lstdc++ -lgcc_eh which are the standard C++ libraries. The original code
+and these libraries are written in C and require functions like printf()
+or malloc() to work.
+
+When builing the UEFI executable we don't have Linux running so the memory
+services or file-system services are not available as Linux system calls.
+This library provides all standard C library functions down to a small list
+of functions implemented as mainly system calls. The list is :
+
+open64() close() read() write() fsync() ioctl() lseek64() stat64()
+malloc() realloc() free()
+atexit() exit() abort()
+time()
+
+A few things to know:
+- Any 32 bits stuff has *not* been tested (but is it still necessary nowadays?)
+  the GNU EFI library can be compiled in both 32 bits and 64 bits but not
+  the UEFI GPT fdisk.
+- For all the system calls from the standard libray we build EFI versions
+  of write(), read() and so on, all these functions are in the ".c" source
+  files in the parent directory, not in this subdirectory.
+
