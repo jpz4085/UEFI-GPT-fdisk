@@ -57,7 +57,7 @@ CFLAGS += -D_FILE_OFFSET_BITS=64
 # UEFI firmware doesn't initialize CPU for MMX et al (returning float or double
 # using Linux x86_64 ABI is not possible: better break during compilation than
 # crash during run).
-CFLAGS += -mno-mmx -mno-sse
+#CFLAGS += -mno-mmx -mno-sse
 # Optimize for size. We also need to use -fno-inline otherwise <stdlib.h> will
 # try to define atof() as "inline" returning a "float" which is not available
 # in UEFI using x86_64 ABI and is forbidden by -mno-mmx option.
