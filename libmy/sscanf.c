@@ -18,10 +18,7 @@ extern int sscanf( const char * s , const char * format , ... ) ;
 
 #include "libmy.h"
 #include <stdarg.h>
-/*
- on n'inclut surtout pas stdio.h
- car il transforme la définition de sscanf() en __iso99_...
- qui ne va pas du tout ! */
+#include <stdio.h>
 
 #ifdef __sscanf
 # undef __sscanf
