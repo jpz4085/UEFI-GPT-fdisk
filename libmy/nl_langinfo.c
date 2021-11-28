@@ -17,7 +17,7 @@
 #include "libmy.h"
 #include <stddef.h>
 #include <langinfo.h>
-#include <xlocale.h>
+#include <locale.h>
 
 #define getenv(x) NULL
 
