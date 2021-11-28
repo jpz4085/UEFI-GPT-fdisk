@@ -13,24 +13,51 @@
 ## La diffusion de ce code est faite selon les termes de la GPL GNU version 2.
 ##
 
-# Patch file for version 0.8.10 and below of GPT fdisk.
+## Patch section for version 1.0.5 and above of GPT fdisk by Joseph Zeller.
+
+## Class variable PartType::unusedPartType is removed and replaced with the
+## associated GUID value used in previous versions of gdisk to prevent hang.
+
+version=$( grep '^#\w*define\>' ../*.h | grep 'VERSION' | awk '{print $NF}' | tr -d '"' )
+if [ "$(printf '%s\n' "1.0.5" "$version" | sort -V | head -n1)" = "1.0.5" ]; then
+	if grep PartType::unusedPartType ../gptpart.cc >/dev/null 2>&1 ; then
+		echo "Replace unusedPartType variable with GUID in gptpart.cc"
+		sed -i 's/PartType::unusedPartType/(GUIDData) "00000000-0000-0000-0000-000000000000"/' ../gptpart.cc
+	else
+		echo "File ../gptpart.cc is already patched."
+	fi
+	if grep unusedPartType ../parttypes.cc >/dev/null 2>&1 ; then
+		echo "Remove unusedPartType variable from parttypes.cc"
+		sed -i '/unusedPartType/d' ../parttypes.cc
+	else
+		echo "File ../parttypes.cc is already patched."
+	fi
+	if grep unusedPartType ../parttypes.h >/dev/null 2>&1 ; then
+		echo "Remove unusedPartType variable from parttypes.h"
+		sed -i '/unusedPartType/d' ../parttypes.h
+		sed -i '/PartType with GUID/d' ../parttypes.h
+	else
+		echo "File ../parttypes.h is already patched."
+	fi
+exit 0
+fi
+
+# Patch section for version 0.8.10 and below of GPT fdisk.
 
 # We add three small bits of code
 # 1) in gdisk.cc we don't display the introduction banner because the
 #    efi_main() function has done this before asking for the disk to edit.
 # 2) in gpt.cc we compute log2 with integers (because in UEFI we can't call
-#    math functions returning double).
+#    math functions returning double.
 # 3) in support.cc for a similar reason we convert sizes to IEEE without
 #    using %f printf format.
 
-version=$( grep '^#\w*define\>' ../*.h | grep 'VERSION' | awk '{print $NF}' | tr -d '"' )
 case "${version}" in
 	1* | 0.9* | 0.8.11 | 0.8.12 )
 		echo "Version " ${version} " of GPT fdisk doesn't need patching."
 		exit 0
 		;;
 esac
-
 
 if grep -w EFI ../gdisk.cc >/dev/null 2>&1 ; then
 	echo "File ../gdisk.cc is already patched."
