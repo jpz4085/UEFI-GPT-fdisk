@@ -16,7 +16,7 @@
 
 #include "libmy.h"
 #include <wctype.h>
-#include <xlocale.h>
+#include <locale.h>
 
 size_t __wcsftime_l( s , maxsize , format , tp , loc )
 	char *s __attribute__((unused)) ;

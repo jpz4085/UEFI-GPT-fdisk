@@ -15,7 +15,7 @@
  */
 
 #include "libmy.h"
-#include <xlocale.h>
+#include <locale.h>
 
 void __strtod_l( nptr , endptr , loc )
 	const char * nptr __attribute__((unused)) ;

@@ -16,7 +16,7 @@
 
 #include "libmy.h"
 #include <string.h>
-#include <xlocale.h>
+#include <locale.h>
 
 int __strcoll_l( s1 , s2 , loc )
 	const char *s1 ;

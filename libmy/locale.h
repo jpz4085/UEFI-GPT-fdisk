@@ -17,7 +17,6 @@
 #include "libmy.h"
 #ifndef	_LOCALE_H
 #include <locale.h>
-#include <xlocale.h>
 
 extern locale_t uselocale (locale_t newloc) ;
 

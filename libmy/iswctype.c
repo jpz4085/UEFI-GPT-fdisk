@@ -17,7 +17,7 @@
 #include "libmy.h"
 #include <stddef.h>
 #include <wctype.h>
-#include <xlocale.h>
+#include <locale.h>
 
 int __iswctype_l( wc , desc , locale )
         wint_t wc __attribute__((unused)) ;

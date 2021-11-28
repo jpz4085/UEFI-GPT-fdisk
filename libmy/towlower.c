@@ -16,7 +16,7 @@
 
 #include "libmy.h"
 #include <wctype.h>
-#include <xlocale.h>
+#include <locale.h>
 
 wint_t __towlower_l( wc , locale )
         wint_t wc ;

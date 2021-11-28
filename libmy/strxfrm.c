@@ -16,7 +16,7 @@
 
 #include "libmy.h"
 #include <string.h>
-#include <xlocale.h>
+#include <locale.h>
 
 size_t __strxfrm_l( dest , src , n , loc )
 	char *dest __attribute__((unused)) ;

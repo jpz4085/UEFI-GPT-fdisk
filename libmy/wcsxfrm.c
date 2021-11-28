@@ -16,7 +16,7 @@
 
 #include "libmy.h"
 #include <wchar.h>
-#include <xlocale.h>
+#include <locale.h>
 
 size_t __wcsxfrm_l( dest , src , n , loc )
 	wchar_t *dest __attribute__((unused)) ;

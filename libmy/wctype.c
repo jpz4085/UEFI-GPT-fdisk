@@ -17,7 +17,7 @@
 #include "libmy.h"
 #include <stddef.h>
 #include <wctype.h>
-#include <xlocale.h>
+#include <locale.h>
 
 wctype_t __wctype_l( property , locale )
 	const char *property __attribute__((unused)) ;

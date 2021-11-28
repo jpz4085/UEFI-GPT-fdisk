@@ -16,7 +16,7 @@
 
 #include "libmy.h"
 #include <wchar.h>
-#include <xlocale.h>
+#include <locale.h>
 
 int __wcscoll_l( s1 , s2 , loc )
 	const wchar_t *s1 ;
