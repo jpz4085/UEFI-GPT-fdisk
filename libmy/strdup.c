@@ -15,19 +15,17 @@
  *  générale GNU version 2 ou plus.
  *
  */
+#define _GNU_SOURCE
 #include "libmy.h"
-#include <errno.h>
-#ifdef errno
-# undef errno
-#endif
-/*
- * Error related.
- */
-__thread int errno ;
-extern __thread int __libc_errno __attribute__((alias ("errno"))) ;
-int *__errno_location (void)
+#include <stdlib.h>
+#include <string.h>
+/* Duplicate S, returning an identical malloc'd string.  */
+char *
+strdup (const char *s)
 {
-	return & errno ;
+	size_t len = strlen (s) + 1;
+	void *new = malloc (len);
+	if (new == NULL)
+		return NULL;
+	return (char *) memcpy (new, s, len);
 }
-__THROW __attribute_const__
-__typeof (__errno_location) errno_location __attribute__((weak, alias("__errno_location"))) ;
