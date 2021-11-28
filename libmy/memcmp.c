@@ -26,9 +26,7 @@ int memcmp( s1 , s2 , n )
         const unsigned char * p1 = (const unsigned char *) s1 ;
         const unsigned char * p2 = (const unsigned char *) s2 ;
         size_t i ;
-        if ( ! s1 && ! s2 ) return 0 ;
-        if ( s1 && ! s2 ) return 1 ;
-        if ( ! s1 && s2 ) return -1 ;
+        
         for ( i = 0 ; i < n ; i ++ ) {
                 if ( * p1 != * p2 ) {
                         return * p1 > * p2 ? 1 : -1 ;
