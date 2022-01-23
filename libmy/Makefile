@@ -76,21 +76,20 @@ OBJS += tolower.o toupper.o towlower.o towupper.o
 OBJS += ltostr.o lltostr.o strtol.o strtoul.o strtof.o strtod.o strtold.o
 OBJS += wcrtomb.o wcsnrtombs.o
 OBJS += stdio.o fopen.o fdopen.o setvbuf.o fileno.o fflush.o fclose.o
-OBJS += fseeko64.o ftello64.o fstat64.o
+OBJS += fseeko64.o ftello64.o
 OBJS += fgetc.o fgetwc.o fgets.o fread.o
 OBJS += fputc.o fputwc.o fputs.o fwrite.o writev.o
-OBJS += printf.o sprintf.o vfprintf.o vsnprintf.o
+OBJS += printf.o sprintf.o vfprintf.o vsnprintf.o v_printf.o
 OBJS += printf_chk.o sprintf_chk.o vfprintf_chk.o vsnprintf_chk.o
-OBJS += v_printf.o
-OBJS += sscanf.o vsscanf.o
-OBJS += v_scanf.o
+OBJS += sscanf.o vsscanf.o v_scanf.o
 OBJS += textdomain.o bindtextdomain.o
 OBJS += nl_langinfo.o global-locale.o ctype-info.o setlocale.o
 OBJS += xlocale.o C-ctype.o C_name.o lc-ctype.o
 OBJS += newlocale.o uselocale.o duplocale.o freelocale.o
 OBJS += strftime_l.o wcsftime_l.o strerror.o gettext.o dgettext.o
 OBJS += btowc.o wctob.o iswctype.o wctype.o ctype_get_mb_cur_max.o
-OBJS += gettimeofday.o iconv.o iconv_close.o iconv_open.o
+OBJS += iconv.o iconv_close.o iconv_open.o
+OBJS += gettimeofday.o single_threaded.o
 
 
 # Build the library by default.
