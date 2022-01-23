@@ -837,9 +837,10 @@ int ioctl( int fd , unsigned long int request, ... )
  * @param ver La version (inutilisé).
  * @param fd Le numéro du descripteur.
  * @param stat_buf L'emplacement où stocker les informations lues.
- */
-int __fxstat64( ver , fd , stat_buf )
-	int ver __attribute__((unused)) ;
+ * Modified from fxstat64 for GCC11 compatibility.
+ */ 
+
+int fstat64( fd , stat_buf )
 	int fd ;
 	struct stat64 * stat_buf ;
 {
