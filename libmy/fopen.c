@@ -22,7 +22,17 @@
 /* en premier */
 #include "libmy.h"
 #include <stdio.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
+int
+open( const char *pathname __attribute__((unused)) , 
+	int flags __attribute__((unused)) ,
+	... )
+{
+	__fortify_fail( "open()" ) ;
+}
 
 /**
  * fopen : ouverture d'un flux.
@@ -37,5 +47,6 @@ fopen( name , mode )
 	__fortify_fail( "fopen()" ) ;
 }
 
+__attribute_malloc__ __attr_dealloc_fclose __wur
 __typeof( fopen ) fopen64 __attribute__(( weak , alias( "fopen" ) )) ;
 
