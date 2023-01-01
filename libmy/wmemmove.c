@@ -28,3 +28,11 @@ wchar_t * wmemmove( dest , src , n )
         */
 }
 
+wchar_t * __wmemmove_chk (s1, s2, n, ns1)
+	wchar_t *s1 __attribute__((unused)) ;
+	const wchar_t *s2 __attribute__((unused)) ;
+	size_t n __attribute__((unused)) ;
+	size_t ns1 __attribute__((unused)) ;
+{
+	__fortify_fail( "__wmemmove_chk()" ) ;
+}

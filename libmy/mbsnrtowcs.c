@@ -28,3 +28,13 @@ size_t mbsnrtowcs( dest , src , nms , len , ps )
 	__fortify_fail( "mbsnrtowcs()" ) ;
 }
 
+size_t __mbsnrtowcs_chk (dst, src, nmc, len, ps, dstlen)
+	wchar_t *dst __attribute__((unused)) ;
+	const char **src __attribute__((unused)) ;
+	size_t nmc __attribute__((unused)) ;
+	size_t len __attribute__((unused)) ;
+	mbstate_t *ps __attribute__((unused)) ;
+	size_t dstlen __attribute__((unused)) ;
+{
+	__fortify_fail( "__mbsnrtowcs_chk()" ) ;
+}

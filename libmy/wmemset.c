@@ -17,11 +17,10 @@
 #include "libmy.h"
 #include <wchar.h>
 
-wchar_t * wmemset(
-        wchar_t * s __attribute__((unused)) ,
-        wchar_t c __attribute__((unused)) ,
-        size_t n __attribute__((unused))
-)
+wchar_t * wmemset(s, c, n)
+        wchar_t * s __attribute__((unused)) ;
+        wchar_t c __attribute__((unused)) ;
+        size_t n __attribute__((unused)) ;
 {
         __fortify_fail( "wmemset()" ) ;
         /*
@@ -36,3 +35,11 @@ wchar_t * wmemset(
         */
 }
 
+wchar_t * __wmemset_chk (s, c, n, dstlen)
+	wchar_t *s __attribute__((unused)) ;
+	wchar_t c __attribute__((unused)) ;
+	size_t n __attribute__((unused)) ;
+	size_t dstlen __attribute__((unused)) ;
+{
+	__fortify_fail( "__wmemset_chk()" ) ;
+}

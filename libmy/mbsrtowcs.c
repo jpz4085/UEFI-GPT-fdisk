@@ -27,3 +27,12 @@ size_t mbsrtowcs( dest , src , max , ps )
 	__fortify_fail( "mbsrtowcs()" ) ;
 }
 
+size_t __mbsrtowcs_chk (dst, src, len, ps, dstlen)
+	wchar_t *dst __attribute__((unused)) ;
+	const char **src __attribute__((unused)) ;
+	size_t len __attribute__((unused)) ;
+	mbstate_t *ps __attribute__((unused)) ;
+	size_t dstlen __attribute__((unused)) ;
+{
+	__fortify_fail( "__mbsrtowcs_chk()" ) ;
+}
