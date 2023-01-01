@@ -5,6 +5,9 @@ Original: https://sourceforge.net/projects/uefigptfdisk/
 
 Run PATCH.sh for GPT fdisk >= 1.0.5
 
+Version 0.5.4 - January 2023
+Compatible with GCC11 and glibc 2.35.
+
 Version 0.5.3 - January 2022
 Compatible with GCC11 and glibc 2.34.
 
