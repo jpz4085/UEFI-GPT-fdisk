@@ -1,9 +1,11 @@
 
-UEFI GPT fdisk: aka gdisk.efi by Bub'soft.
+UEFI GPT fdisk: aka gdisk.efi by jpz4085.
 Build of GPT fdisk for UEFI BIOS environments.
-Original: https://sourceforge.net/projects/uefigptfdisk/
 
-Run PATCH.sh for GPT fdisk >= 1.0.5
+Run PATCH.sh for GPT fdisk >= 1.0.5 | gnu-efi >= 3.0.18
+
+Version 0.5.5 - August 2024
+Compatible with GCC12 and glibc 2.39.
 
 Version 0.5.4 - January 2023
 Compatible with GCC11 and glibc 2.35.
@@ -18,7 +20,8 @@ Version 0.5.1 - November 2021
 Compatible with GCC5. Fixed hang issues.
 
 Version 0.5 november 2015.
-Version <1 means it's pretty much beta software like GPT fdisk in fact.
+Original beta version by Bub'soft linked below.
+https://sourceforge.net/projects/uefigptfdisk/
 
 First attempt by Bernard Burette <bernard at burette dot net> january 2014.
 
