@@ -21,6 +21,8 @@
 
 #include "dietstdio.h"
 
+#pragma GCC diagnostic ignored "-Wstringop-overflow"
+
 int __sprintf_chk(
         char * s ,
         int flag __attribute__((unused)) ,

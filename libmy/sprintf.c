@@ -22,6 +22,8 @@
 
 #include "dietstdio.h"
 
+#pragma GCC diagnostic ignored "-Wstringop-overflow"
+
 int sprintf(char *dest,const char *format,...)
 {
   int n;
