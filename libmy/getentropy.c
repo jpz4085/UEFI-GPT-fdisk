@@ -15,24 +15,11 @@
  */
 
 #include "libmy.h"
-#include <sys/types.h>
-#include <string.h>
+#include <sys/random.h>
 
-/* gcc is broken and has a non-SUSv2 compliant internal prototype.
- * This causes it to warn about a type mismatch here.  Ignore it. */
-void* __attribute__((weak)) memset(void * dst, int s, size_t count) {
-    register char * a = dst;
-    count++;	/* this actually creates smaller code than using count-- */
-    while (--count)
-	*a++ = s;
-    return dst;
-}
-
-void *
-__memset_chk (void *dstpp, int c, size_t len, size_t dstlen)
+int getentropy (buffer, length)
+	void *buffer __attribute__((unused)) ;
+	size_t length __attribute__((unused)) ;
 {
-  if (dstlen < len)
-      __fortify_fail ("buffer overflow detected");
-  
-  return memset (dstpp, c, len);
+	__fortify_fail( "getentropy()" ) ;
 }

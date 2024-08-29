@@ -49,4 +49,4 @@ int __sscanf( const char * s , const char * format , ... )
 }
 
 __typeof (__sscanf) sscanf __attribute__((weak, alias("__sscanf"))) ;
-
+__typeof (__sscanf) __isoc23_sscanf __attribute__((weak, alias("__sscanf"))) ;

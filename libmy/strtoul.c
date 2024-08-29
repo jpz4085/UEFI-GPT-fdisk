@@ -43,7 +43,9 @@
 #endif
 #define isxdigit( c ) ( ( c >= '0' && c <= '9' ) || ( c >= 'A' && c <= 'F' ) || ( c >= 'a' && c <= 'f' ) )
 
-unsigned long int __strtoul(const char *ptr, char **endptr, int base)
+unsigned long int
+__attribute__((weak))
+__strtoul(const char *ptr, char **endptr, int base)
 {
   int neg = 0, overflow = 0;
   unsigned long int v=0;

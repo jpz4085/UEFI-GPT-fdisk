@@ -68,7 +68,7 @@ CFLAGS += $(EFI_DEBUG_FLAGS)
 # List of object files required to link a nice gdisk.so.
 OBJS += abs.o dl_iterate_phdr.o syscall.o sleep.o errno.o
 OBJS += strlen.o strcmp.o strcoll.o strxfrm.o strcpy.o strdup.o
-OBJS += wcslen.o wcscmp.o wcscoll.o wcsxfrm.o
+OBJS += dl_find_object.o wcslen.o wcscmp.o wcscoll.o wcsxfrm.o
 OBJS += memset.o memcmp.o memchr.o memcpy.o memmove.o
 OBJS += wmemset.o wmemcmp.o wmemchr.o wmemcpy.o wmemmove.o
 OBJS += mbrtowc.o mbsnrtowcs.o mbsrtowcs.o
@@ -90,7 +90,7 @@ OBJS += strftime_l.o wcsftime_l.o strerror.o gettext.o dgettext.o
 OBJS += btowc.o wctob.o iswctype.o wctype.o ctype_get_mb_cur_max.o
 OBJS += iconv.o iconv_close.o iconv_open.o
 OBJS += single_threaded.o pthread_mutex.o
-OBJS += gettimeofday.o
+OBJS += gettimeofday.o getentropy.o read_chk.o arc4random.o
 
 
 # Build the library by default.

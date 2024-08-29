@@ -22,6 +22,7 @@
 #include "dietstring.h"
 
 void *
+__attribute__((weak))
 memcpy (void *dst, const void *src, size_t n)
 {
     void           *res = dst;
@@ -65,4 +66,13 @@ memcpy (void *dst, const void *src, size_t n)
 
     return (res);
 #endif
+}
+
+void *
+__memcpy_chk (void *dstpp, const void *srcpp, size_t len, size_t dstlen)
+{
+  if (dstlen < len)
+      __fortify_fail ("buffer overflow detected");
+      
+  return memcpy (dstpp, srcpp, len);
 }
