@@ -142,6 +142,7 @@ SECTIONS
       *(.rela.iplt)
       PROVIDE_HIDDEN (__rela_iplt_end = .);
     }
+  . = ALIGN(4096);
   .plt            : { *(.plt) *(.iplt) }
   . = ALIGN( 4096 ) ;
   .eh_frame_hdr : { *(.eh_frame_hdr) }
