@@ -5,8 +5,8 @@
  * UEFI GPT fdisk est un portage de GPT fdisk vers UEFI/BIOS.
  * Ce fichier a été initié par Bernard Burette en janvier 2014.
  *
- * All this work is copyleft Bernard Burette.
- * Gauche d'auteur Bernard Burette.
+ * Original work is copyleft Bernard Burette.
+ * Modifications are copyleft Joseph Zeller.
  *
  * This program is distributed under the terms of the GNU GPL version 2.
  * La diffusion de ce code est faite selon les termes de la GPL GNU version 2.
@@ -145,6 +145,10 @@ int UEFI_console_putchar( long c , char e ) ;
 #define UEFI_call5( f , a1 , a2 , a3 , a4 , a5 ) efi_call5( (void*) ( f ) , \
 	(UINTN) ( a1 ) , (UINTN) ( a2 ) , (UINTN) ( a3 ) , (UINTN) ( a4 ) , \
 	(UINTN) ( a5 ) )
+	
+#define UEFI_call6( f , a1 , a2 , a3 , a4 , a5 , a6 ) efi_call6( (void*) ( f ) , \
+	(UINTN) ( a1 ) , (UINTN) ( a2 ) , (UINTN) ( a3 ) , (UINTN) ( a4 ) , \
+	(UINTN) ( a5 ) , (UINTN) ( a6 ) )
 
 #if defined( __cplusplus )
 }

@@ -5,8 +5,8 @@
  * UEFI GPT fdisk est un portage de GPT fdisk vers UEFI/BIOS.
  * Ce fichier a été initié par Bernard Burette en février 2014.
  *
- * All this work is copyleft Bernard Burette.
- * Gauche d'auteur Bernard Burette.
+ * Original work is copyleft Bernard Burette.
+ * Modifications are copyleft Joseph Zeller.
  *
  * This program is distributed under the terms of the GNU GPL version 2.
  * La diffusion de ce code est faite selon les termes de la GPL GNU version 2.
@@ -28,11 +28,18 @@
 #include "debug.h"
 #include <efi.h>
 #include <efilib.h>
+#include <efishell.h>
+#include <efiprot.h>
 #include "../support.h"
+
+extern "C" {
+#include "libmy/converter.h"
+}
 
 #include <iostream>
 #include <stdlib.h>
 #include <unistd.h>
+#include <cstring>
 
 using namespace std ;
 
@@ -50,9 +57,11 @@ UINTN HandleCount ;
 
 
 /**
- * La table des disques utilisables.
+ * table: Table of fixed disks when no argument is present.
+ * Device: Handle of the block device passed by UEFI Shell.
  */
 static EFI_HANDLE * table ;
+static EFI_HANDLE * Device;
 
 
 /**
@@ -190,11 +199,158 @@ static EFI_STATUS FindPartitionableDevices( void )
     return EFI_SUCCESS;
 }
 
+/**
+ * Read in arguments from the UEFI Shell command line.
+ */
+static EFI_STATUS
+get_args(EFI_HANDLE image, UINTN *argc, CHAR16 ***argv)
+{
+    EFI_STATUS status;
+    EFI_SHELL_PARAMETERS_PROTOCOL *ShellParameters;
+    EFI_GUID ShellParametersProtocolGuid = EFI_SHELL_PARAMETERS_PROTOCOL_GUID;
+
+    status = UEFI_call(ST->BootServices->OpenProtocol,
+    	               image, &ShellParametersProtocolGuid,
+                       (VOID **)&ShellParameters, image, NULL,
+                       EFI_OPEN_PROTOCOL_GET_PROTOCOL);
+    if (EFI_ERROR(status)) {
+    	return status;
+    }
+
+    *argc = ShellParameters->Argc;
+    *argv = ShellParameters->Argv;
+
+    status = UEFI_call(ST->BootServices->CloseProtocol, image,
+                       &ShellParametersProtocolGuid, image, NULL);
+    return status; 
+}
+
+
+/**
+ * Get the handle of the block device passed through the command line.
+ * Display an error message and return if unable to get device path or
+ * handle or device seems to be a partition or DVD rather than a disk.
+ */
+static EFI_STATUS
+get_device_handle(CONST CHAR16 *Mapping)
+{
+	EFI_STATUS status;
+	EFI_BLOCK_IO *BlkIo;
+	EFI_SHELL_PROTOCOL *Shell; 
+	CONST EFI_DEVICE_PATH_PROTOCOL *EfiDevPath;
+	EFI_GUID ShellProtocolGuid = EFI_SHELL_PROTOCOL_GUID;
+	EFI_GUID BlockIoProtocolGuid = EFI_BLOCK_IO_PROTOCOL_GUID;
+        
+        status = UEFI_call(ST->BootServices->LocateProtocol,
+                           &ShellProtocolGuid, NULL, (VOID **)&Shell);
+        
+        if (EFI_ERROR(status)) {
+        	Print(L"Unable to access shell protocol data. \n");
+        	Print(L"Run this program without arguments. \n");
+        	return status;
+        }
+        
+        EfiDevPath = (EFI_DEVICE_PATH_PROTOCOL *) UEFI_call(
+                      Shell->GetDevicePathFromMap, Mapping);
+        
+        if (!EfiDevPath) {
+        	Print(L"Unable to get device path for %s. \n", Mapping);
+        	status = EFI_ABORTED;
+        	return status;
+        }
+        
+        status = UEFI_call(ST->BootServices->LocateDevicePath,
+                           &BlockIoProtocolGuid, &EfiDevPath, &Device);
+        
+        if (EFI_ERROR(status)) {
+        	Print(L"Unable to get device handle for %s. \n", Mapping);
+        	return status;
+        }
+        
+        status = UEFI_call(ST->BootServices->HandleProtocol,
+                           Device, &BlockIoProtocolGuid, &BlkIo);
+        
+        if (EFI_ERROR(status)) {
+        	Print(L"Unable to get device data for %s. \n", Mapping);
+        	return status;
+        }
+        
+        if (BlkIo->Media->LogicalPartition) {
+        	Print(L"Device %s appears to be a partition. \n", Mapping);
+        	status = EFI_ABORTED;
+        	return status;
+        }
+        
+        if (!BlkIo->Media->MediaPresent) {
+        	Print(L"Device %s does not have media present. \n", Mapping);
+        	status = EFI_ABORTED;
+        	return status;
+        }
+        
+        if (BlkIo->Media->ReadOnly) {
+        	Print(L"Device %s can not be partitioned: Read Only. \n", Mapping);
+        	status = EFI_ABORTED;
+        	return status;
+        }
+
+	return status;
+}
+
+/**
+ * Shift all characters to lower case then
+ * get program name from end of file path.
+ */
+static CHAR16 *progname (CHAR16 *opt)
+{
+	CHAR16 *ptr;
+	static BOOLEAN islower;
+	
+	if (!islower) {
+		for (UINTN i = 0; opt[i]; i++)
+			StrLwr(&opt[i]);
+		islower = TRUE;
+	}
+	
+	for (ptr = NULL;; opt++) {
+		if (*opt == '\\'){
+			opt++;
+			ptr = (CHAR16 *)opt;
+		}
+		if (*opt == '\0')
+			return (ptr);
+	}
+}
+
+/**
+ *  Format program name to UTF-8 then copy to proginvoshrtname.
+ */
+void set_shortname(CHAR16 *optname, char *pshort)
+{
+	size_t length = (size_t)StrLen(optname);
+	size_t buffsz = utf16_to_utf8((utf16_t*)optname, length, NULL, 0);
+	utf8_t* buffer = (utf8_t*) malloc(buffsz + 1);
+	if (!buffer) {
+		Print(L"malloc: Failed to allocate buffer for name argument. \n");
+		FreePool(buffer);
+		exit(5);
+    	}
+    	ZeroMem(buffer, buffsz + 1);
+	utf16_to_utf8((utf16_t*)optname, length, buffer, buffsz);
+	buffer[buffsz + 1] = '\0';
+	strcpy(pshort, (const char*)buffer);
+	FreePool(buffer);
+}
+
+/**
+ * Le nom de ce programme.
+ */
+static char proginvoshrtname[25];
+char *shortname = (char*) proginvoshrtname;
 
 /**
  * Les arguments passés à la fonction main().
  */
-static const char* argv[] = { "gdisk" , NULL , NULL } ;
+static const char* args[32];
 static const char* envp[] = { NULL } ;
 
 
@@ -226,54 +382,89 @@ efi_main( EFI_HANDLE ImageHandle , EFI_SYSTEM_TABLE * SystemTable )
 {
 	EFI_STATUS status ;
 	EFI_HANDLE Disk ;
+	UINTN argc = 0;
+	CHAR16 **argv;
+	
 	/* initialise la librairie GNU */
 	InitializeLib( ImageHandle , SystemTable ) ;
-#if 0
-	/* les information sur moi-même */
-	EFI_LOADED_IMAGE * loaded_image = NULL ;
-	EFI_GUID my_LoadedImageProtocol = LOADED_IMAGE_PROTOCOL ;
-	status = UEFI_call( SystemTable-> BootServices-> HandleProtocol ,
-		ImageHandle , & my_LoadedImageProtocol ,
-		(void **) & loaded_image ) ;
-	if ( EFI_ERROR( status ) ) {
-		__fortify_fail( "handleprotocol" ) ;
-	}
-	UEFI_dprintf( D_INFO , "Hello, world!\n" ) ;
-	UEFI_dprintf( D_INFO , "Image base            : %p\n" ,
-		loaded_image-> ImageBase ) ;
-	UEFI_dprintf( D_INFO , "Image size            : %ld\n" ,
-		loaded_image-> ImageSize ) ;
-	UEFI_dprintf( D_INFO , "efi_main              : %p\n" , efi_main ) ;
-	UEFI_dprintf( D_INFO , "Fin des initialisations, appel de main()\n" ) ;
-#endif
-	cout << "UEFI GPT fdisk (gdisk.efi) version " GPTFDISK_VERSION "\n\n"
-		"List of hard disks found:\n" ;
-	FindPartitionableDevices() ;
-	cout << '\n' ;
-
-	/* si un seul disque, le sélectionne, sinon... */
-	if ( max_table == 1 ) {
-		Disk = table[ 0 ] ;
-		cout << "Using 1\n" ;
+	
+	/* Get arguments from UEFI Shell */
+	status = get_args(ImageHandle, &argc, &argv);
+	
+	/* Set the program name depending on the presence of auguments */
+	if (status == EFI_SUCCESS) {
+		set_shortname(progname(argv[0]), proginvoshrtname);
 	} else {
-		for(;;) {
-			cout << "Disk number (1-" << max_table << "): " ;
-			int n = 0 ;
-			cin >> n ;
-			if ( ! cin.good() ) {
-				/* fin de fichier ? */
-				exit( 5 ) ;
-			}
-			if ( n >= 1 && n <= max_table ) {
-				Disk = table[ n - 1 ] ;
-				break ;
+		strcpy(proginvoshrtname, "gdisk.efi");
+	}
+
+#ifdef VBOXERR	
+	/* Send errors/warnings to stdout under VirtualBox */
+	cerr.rdbuf(cout.rdbuf());
+#endif
+	
+	cout << "UEFI GPT fdisk (" << shortname << ") version " GPTFDISK_VERSION "\n\n";
+
+	if (argc < 2) {
+		cout << "List of hard disks found:\n" ;
+		FindPartitionableDevices() ;
+		cout << '\n' ;
+
+		/* si un seul disque, le sélectionne, sinon... */
+		if ( max_table == 1 ) {
+			Disk = table[ 0 ] ;
+			cout << "Using 1\n" ;
+		} else {
+			for(;;) {
+				cout << "Disk number (1-" << max_table << "): " ;
+				int n = 0 ;
+				cin >> n ;
+				if ( ! cin.good() ) {
+					/* fin de fichier ? */
+					exit( 5 ) ;
+				}
+				if ( n >= 1 && n <= max_table ) {
+					Disk = table[ n - 1 ] ;
+					break ;
+				}
 			}
 		}
+		cout << '\n' ;
+		argc = 2;
+		args[0] = proginvoshrtname;
+		args[1] = UEFI_disk_name(Disk);
+	} else {
+		/* Read in arguments from UEFI Shell and format to UTF-8 */
+		for (UINTN i = 0; i < argc; i++) {
+			size_t len = (size_t)StrLen(argv[i]);
+			size_t out_len = utf16_to_utf8((utf16_t*)argv[i], len, NULL, 0);
+			utf8_t* out_buf = (utf8_t*) malloc(out_len + 1);
+			if (!out_buf) {
+				Print(L"malloc: Failed to allocate buffer for arguments. \n");
+				FreePool(out_buf);
+				exit(5);
+    			}
+    			ZeroMem(out_buf, out_len + 1);
+			utf16_to_utf8((utf16_t*)argv[i], len, out_buf, out_len);
+			out_buf[out_len + 1] = '\0';
+			if (!CompareMem(out_buf, "-", 1) ||
+			    !CompareMem(out_buf, "--", 2)) {
+			        args[i] = (const char*)out_buf;
+			} else if (i == 0) {
+				args[i] = proginvoshrtname;
+			} else {
+				status = get_device_handle(argv[i]);
+				if (EFI_ERROR(status)) {
+					FreePool(out_buf);
+					exit(5);
+				}
+				args[i] = UEFI_disk_name(Device);
+			}
+			FreePool(out_buf);
+		}
 	}
-	cout << '\n' ;
 
-	argv[ 1 ] = UEFI_disk_name( Disk ) ;
-	status = main( 2 , argv , envp ) ;
+	status = main( (int)argc , args , envp ) ;
 
 	if ( status != EFI_SUCCESS ) status = EFI_ABORTED ;
 	return status ;
