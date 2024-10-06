@@ -2,13 +2,21 @@
 
 This is a port of the linux disk partitioning tool by Roderick W. Smith for use in a UEFI environment. It can be added as an option to the firmware boot menu like an operating system or run as an application from the UEFI Shell. When running from the shell it will accept all valid command line arguments including a block device. If run without arguments or as a firmware boot option the program will display a list of internal disks for selection. The original library can be found on SourceForge at [UEFI GPT fdisk](https://sourceforge.net/projects/uefigptfdisk/) by bub75.
 
-<img align="center" src="https://raw.githubusercontent.com/jpz4085/UEFI-GPT-fdisk/main/.github/images/gdisk_create.png"/>
+<p align="center" width="100%">
+<img src="https://raw.githubusercontent.com/jpz4085/UEFI-GPT-fdisk/main/.github/images/gdisk_create.png"/>
+</p>
 
-Example 1: Create three new partitions then write to block device.
+<p align="center">
+Example 1: Create three new partitions then write to the block device.
+</p>
 
-<img align="center" src="https://raw.githubusercontent.com/jpz4085/UEFI-GPT-fdisk/main/.github/images/gdisk_list.png" width=623 height=470/>
+<p align="center" width="100%">
+<img src="https://raw.githubusercontent.com/jpz4085/UEFI-GPT-fdisk/main/.github/images/gdisk_list.png" width=623 height=470/>
+</p>
 
+<p align="center">
 Example 2: List partitions on the specified block device.
+</p>
 
 ## Requirements
 
