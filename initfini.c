@@ -5,8 +5,8 @@
  * UEFI GPT fdisk est un portage de GPT fdisk vers UEFI/BIOS.
  * Ce fichier a été initié par Bernard Burette en février 2014.
  *
- * All this work is copyleft Bernard Burette.
- * Gauche d'auteur Bernard Burette.
+ * Original work is copyleft Bernard Burette.
+ * Modifications are copyleft Joseph Zeller.
  *
  * This program is distributed under the terms of the GNU GPL version 2.
  * La diffusion de ce code est faite selon les termes de la GPL GNU version 2.
@@ -34,12 +34,13 @@ static char* envp[] = { NULL } ;
 
 
 /**
- * Le script de link elf-$(ARCH).lds définit ces symboles.
+ * Initialization symbols defined in the elf-$(ARCH).lds script.
+ * These have been renamed to avoid matching the GNU-EFI defaults.
  */
-extern void ( * __init_array_start[] ) ( int , char ** , char ** ) ;
-extern void ( * __init_array_end[] ) ( int , char ** , char ** ) ;
-extern void ( * __fini_array_start[] ) ( void ) ;
-extern void ( * __fini_array_end[] ) ( void ) ;
+extern void ( * init_array_start[] ) ( int , char ** , char ** ) ;
+extern void ( * init_array_end[] ) ( int , char ** , char ** ) ;
+extern void ( * fini_array_start[] ) ( void ) ;
+extern void ( * fini_array_end[] ) ( void ) ;
 
 
 /**
@@ -49,11 +50,10 @@ static void __internal_atexit( void (*func) (void) , void *arg ) ;
 
 
 /**
- * La fonction _call_init() appelée depuis _start au tout début de l'exécution
- * avant de passer le contrôle à efi_main().
- * Cette fonction appelle toutes les fonctions référencées dans le tableau
- * __init_array[] dont le début et la fin sont fournies à ce code par les
- * symboles __init_array_start et __init_array_end.
+ * Initialization function called from _start in start-x86_64.S before
+ * passing control to efi_main(). _call_init will call all functions in
+ * the .init_array table where the start and end are provided by the
+ * init_array_start and init_array_end symbols.
  */
 void
 _call_init()
@@ -61,12 +61,12 @@ _call_init()
 	size_t size ;
 	size_t i;
 	UEFI_dprintf( D_INIT | D_INFO , "Entre dans _call_init()\n" ) ;
-	size = __init_array_end - __init_array_start;
+	size = init_array_end - init_array_start;
 	UEFI_dprintf( D_INIT | D_INFO , "__init_array[%ld]\n" , size ) ;
 	/* debug : affiche les adresses des premières fonctions */
 	for (i = 0; i < size; i++) {
 		UEFI_dprintf( D_INIT | D_INFO , " __init_array[%ld] = %p\n" ,
-			i , __init_array_start[ i ] ) ;
+			i , init_array_start[ i ] ) ;
 		if ( i >= 4 ) {
 			UEFI_dprintf( D_INIT | D_INFO , " ...\n" ) ;
 			break ;
@@ -74,7 +74,7 @@ _call_init()
 	}
 	for (i = 0; i < size; i++) {
 		void (* appel) ( int , char ** , char ** ) ;
-		appel = __init_array_start[ i ] ;
+		appel = init_array_start[ i ] ;
 		UEFI_dprintf( D_INIT | D_INFO | D_DEBUG ,
 			"Appelle __init_array[%ld] = %p -" , i , appel ) ;
 #ifdef EFI_DEBUG
@@ -96,11 +96,11 @@ _call_init()
 		UEFI_dprintf( D_INIT | D_INFO , "<--\n" ) ;
 	}
 	/* enregistre les fonctions de fin */
-	size = __fini_array_end - __fini_array_start;
+	size = fini_array_end - fini_array_start;
 	UEFI_dprintf( D_INIT | D_INFO , "__fini_array[%ld]\n" , size ) ;
 	for (i = 0; i < size; i++) {
 		void (* to_call) (void) ;
-		to_call = __fini_array_start[ i ] ;
+		to_call = fini_array_start[ i ] ;
 		__internal_atexit( to_call , 0 ) ;
 	}
 	

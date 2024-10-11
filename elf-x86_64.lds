@@ -86,22 +86,24 @@ SECTIONS
     *(.rodata .rodata.* .gnu.linkonce.r.*)
     . = ALIGN( 8 ) ; /* to make sure pointers are aligned */
     /*
-       GNU EFI has no provision for calling __init_array[] functions, for GPT
-       fdisk on EFI we add the __preinit_array[] as well (although it doesn't
-       seem to be used) and __fini_array[].
-       We need those guys in gdisk because g++ uses __init_array to create
-       static objects: it doesn't use any .ctors section, don't ask *me* why.
+       GNU-EFI had no provision for calling __init_array[] and __fini_array[] functions
+       until version 3.0.17 which introduced ELF constructors and destructors. We define
+       the __init_array and __fini_array symbols with shorter names because the GNU-EFI
+       default in lib\ctors.S defines empty arrays which will cause efi_main to freeze.
+       
+       GPT fdisk on EFI needs these because g++ uses __init_array to create static objects:
+       it doesn't use any .ctors section for some reason. We also add the __preinit_array[]
+       which seems to be unused. The symbols below are used in initfini.c with _call_init.
     */
-    /* Define __init_array_start and __fini_array_start used in initfini.c */
-    PROVIDE_HIDDEN (__init_array_start = .);
+    PROVIDE_HIDDEN (init_array_start = .);
     KEEP (*(.preinit_array))
     KEEP (*(SORT_BY_INIT_PRIORITY(.init_array.*) SORT_BY_INIT_PRIORITY(.ctors.*)))
     KEEP (*(.init_array EXCLUDE_FILE (*crtbegin.o *crtbegin?.o *crtend.o *crtend?.o ) .ctors))
-    PROVIDE_HIDDEN (__init_array_end = .);
-    PROVIDE_HIDDEN (__fini_array_start = .);
+    PROVIDE_HIDDEN (init_array_end = .);
+    PROVIDE_HIDDEN (fini_array_start = .);
     KEEP (*(SORT_BY_INIT_PRIORITY(.fini_array.*) SORT_BY_INIT_PRIORITY(.dtors.*)))
     KEEP (*(.fini_array EXCLUDE_FILE (*crtbegin.o *crtbegin?.o *crtend.o *crtend?.o ) .dtors))
-    PROVIDE_HIDDEN (__fini_array_end = .);
+    PROVIDE_HIDDEN (fini_array_end = .);
   }
   .rdata1        : { *(.rodata1) }
   . = ALIGN( 4096 ) ;

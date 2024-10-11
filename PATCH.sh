@@ -13,51 +13,6 @@
 ## La diffusion de ce code est faite selon les termes de la GPL GNU version 2.
 ##
 
-## Patch section for version 3.0.18 and above of gnu-efi by Joseph Zeller.
-## Rename the init/fini arrary statements with the original name format to 
-## prevent hang. This applies to the elf architecture files in the gnuefi
-## folder as well as the ctors.S and entry.c files in the lib folder.
-
-gnuefipath=$(ls -d gnu-efi-*)
-if [[ ! -z "$gnuefipath" ]]; then
-   gnuefiver=$(grep 'export VERSION' $gnuefipath/Makefile | awk '{print $NF}')
-   if [ "$(printf '%s\n' "3.0.18" "$gnuefiver" | sort -V | head -n1)" = "3.0.18" ]; then
-	   readarray -t archfiles <<< $(ls -1 $gnuefipath/gnuefi/*.lds)
-	   readarray -t libfiles <<< $(ls -1 $gnuefipath/lib/{ctors.S,entry.c})
-	   archfiles+=("${libfiles[@]}")
-	   error="false"
-	   for key in "${!archfiles[@]}"
-	   do
-		   if grep -w __init_array_start ${archfiles[$key]} >/dev/null 2>&1 ; then
-			   sed -i 's/__init_array_start/_init_array/' ${archfiles[$key]}
-	                   if [[ $? -eq 0 ]]; then patched="true"; else patched="false"; fi
-		   fi
-		   if grep -w __init_array_end ${archfiles[$key]} >/dev/null 2>&1 ; then
-			   sed -i 's/__init_array_end/_init_array_end/' ${archfiles[$key]}
-			   if [[ $? -eq 0 ]]; then patched+="true"; else patched+="false"; fi
-		   fi
-		   if grep -w __fini_array_start ${archfiles[$key]} >/dev/null 2>&1 ; then
-			   sed -i 's/__fini_array_start/_fini_array/' ${archfiles[$key]}
-			   if [[ $? -eq 0 ]]; then patched+="true"; else patched+="false"; fi
-		   fi
-		   if grep -w __fini_array_end ${archfiles[$key]} >/dev/null 2>&1 ; then
-			   sed -i 's/__fini_array_end/_fini_array_end/' ${archfiles[$key]}
-		   	   if [[ $? -eq 0 ]]; then patched+="true"; else patched+="false"; fi
-		   fi
-		   if   [[ ! -z "$patched" && "$patched" != *"false"* ]]; then
-		        echo "Renamed array statements in $(basename ${archfiles[$key]})"
-		   elif [[ ! -z "$patched" && "$patched" == *"false"* ]]; then
-		        echo "Failed to patch array names in $(basename ${archfiles[$key]})"
-		        error="true"
-		        break
-		   else
-		        echo "File $(basename ${archfiles[$key]}) is already patched."
-		   fi
-	   done
-	   if [[ "$error" == "true" ]]; then exit 1; fi
-   fi
-fi
-
 ## Patch section for version 1.0.5 and above of GPT fdisk by Joseph Zeller.
 ## Class variable PartType::unusedPartType is removed and replaced with the
 ## associated GUID value used in previous versions of gdisk to prevent hang.
