@@ -40,9 +40,7 @@ git clone https://git.code.sf.net/p/gptfdisk/code gptfdisk-code
 3. Move the GNU-EFI folder inside the UEFI-GPT-fdisk folder.
 4. Move the UEFI-GPT-fdisk folder inside the gdisk source folder.
 5. Now open a terminal at the UEFI-GPT-fdisk subdirectory.
-6. Enter "PATCH.sh" at the prompt when using the following versions.
-	- GPT fdisk: 1.0.5 and above.
-	- GNU-EFI: 3.0.18 and above.
+6. Run "PATCH.sh" when using GPT fdisk v1.0.5 and above.
 7. Enter "make" at the prompt to build the executable.
 
 ## Addendum
