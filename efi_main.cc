@@ -245,8 +245,8 @@ get_device_handle(CONST CHAR16 *Mapping)
                            &ShellProtocolGuid, NULL, (VOID **)&Shell);
         
         if (EFI_ERROR(status)) {
-        	Print(L"Unable to access shell protocol data. \n");
-        	Print(L"Run this program without arguments. \n");
+        	Print((CHAR16*)u"Unable to access shell protocol data. \n");
+        	Print((CHAR16*)u"Run this program without arguments. \n");
         	return status;
         }
         
@@ -254,7 +254,7 @@ get_device_handle(CONST CHAR16 *Mapping)
                       Shell->GetDevicePathFromMap, Mapping);
         
         if (!EfiDevPath) {
-        	Print(L"Unable to get device path for %s. \n", Mapping);
+        	Print((CHAR16*)u"Unable to get device path for %s. \n", Mapping);
         	status = EFI_ABORTED;
         	return status;
         }
@@ -263,7 +263,7 @@ get_device_handle(CONST CHAR16 *Mapping)
                            &BlockIoProtocolGuid, &EfiDevPath, &Device);
         
         if (EFI_ERROR(status)) {
-        	Print(L"Unable to get device handle for %s. \n", Mapping);
+        	Print((CHAR16*)u"Unable to get device handle for %s. \n", Mapping);
         	return status;
         }
         
@@ -271,24 +271,24 @@ get_device_handle(CONST CHAR16 *Mapping)
                            Device, &BlockIoProtocolGuid, &BlkIo);
         
         if (EFI_ERROR(status)) {
-        	Print(L"Unable to get device data for %s. \n", Mapping);
+        	Print((CHAR16*)u"Unable to get device data for %s. \n", Mapping);
         	return status;
         }
         
         if (BlkIo->Media->LogicalPartition) {
-        	Print(L"Device %s appears to be a partition. \n", Mapping);
+        	Print((CHAR16*)u"Device %s appears to be a partition. \n", Mapping);
         	status = EFI_ABORTED;
         	return status;
         }
         
         if (!BlkIo->Media->MediaPresent) {
-        	Print(L"Device %s does not have media present. \n", Mapping);
+        	Print((CHAR16*)u"Device %s does not have media present. \n", Mapping);
         	status = EFI_ABORTED;
         	return status;
         }
         
         if (BlkIo->Media->ReadOnly) {
-        	Print(L"Device %s can not be partitioned: Read Only. \n", Mapping);
+        	Print((CHAR16*)u"Device %s can not be partitioned: Read Only. \n", Mapping);
         	status = EFI_ABORTED;
         	return status;
         }
@@ -330,7 +330,7 @@ void set_shortname(CHAR16 *optname, char *pshort)
 	size_t buffsz = utf16_to_utf8((utf16_t*)optname, length, NULL, 0);
 	utf8_t* buffer = (utf8_t*) malloc(buffsz + 1);
 	if (!buffer) {
-		Print(L"malloc: Failed to allocate buffer for name argument. \n");
+		Print((CHAR16*)u"malloc: Failed to allocate buffer for name argument. \n");
 		FreePool(buffer);
 		exit(5);
     	}
@@ -440,7 +440,7 @@ efi_main( EFI_HANDLE ImageHandle , EFI_SYSTEM_TABLE * SystemTable )
 			size_t out_len = utf16_to_utf8((utf16_t*)argv[i], len, NULL, 0);
 			utf8_t* out_buf = (utf8_t*) malloc(out_len + 1);
 			if (!out_buf) {
-				Print(L"malloc: Failed to allocate buffer for arguments. \n");
+				Print((CHAR16*)u"malloc: Failed to allocate buffer for arguments. \n");
 				FreePool(out_buf);
 				exit(5);
     			}
