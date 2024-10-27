@@ -14,33 +14,23 @@
 ##
 
 ## Patch section for version 1.0.5 and above of GPT fdisk by Joseph Zeller.
-## Class variable PartType::unusedPartType is removed and replaced with the
-## associated GUID value used in previous versions of gdisk to prevent hang.
+## Class variable unusedPartType is defined as GUIDData instead of PartType
+## to prevent a freeze caused by the default GUIDData constructor accessing
+## UEFI (time) services before the full initialization process is complete.
 
 version=$( grep '^#\w*define\>' ../*.h | grep 'VERSION' | awk '{print $NF}' | tr -d '"' )
 if [ "$(printf '%s\n' "1.0.5" "$version" | sort -V | head -n1)" = "1.0.5" ]; then
-	if grep PartType::unusedPartType ../gptpart.cc >/dev/null 2>&1 ; then
-		echo "Replace unusedPartType variable with GUID in gptpart.cc"
-		sed -i 's/PartType::unusedPartType/(GUIDData) "00000000-0000-0000-0000-000000000000"/' ../gptpart.cc
-	else
-		echo "File ../gptpart.cc is already patched."
-	fi
-	if grep PartType::unusedPartType ../gptcl.cc >/dev/null 2>&1 ; then
-		echo "Replace unusedPartType variable with GUID in gptcl.cc"
-		sed -i 's/PartType::unusedPartType/(GUIDData) "00000000-0000-0000-0000-000000000000"/' ../gptcl.cc
-	else
-		echo "File ../gptcl.cc is already patched."
-	fi
-	if grep unusedPartType ../parttypes.cc >/dev/null 2>&1 ; then
-		echo "Remove unusedPartType variable from parttypes.cc"
-		sed -i '/unusedPartType/d' ../parttypes.cc
+	if grep "const PartType PartType::unusedPartType" ../parttypes.cc >/dev/null 2>&1 ; then
+		echo "Patch unusedPartType variable in parttypes.cc"
+		sed -i 's/PartType PartType::unusedPartType = (GUIDData)/GUIDData PartType::unusedPartType =/g' ../parttypes.cc
 	else
 		echo "File ../parttypes.cc is already patched."
 	fi
-	if grep unusedPartType ../parttypes.h >/dev/null 2>&1 ; then
-		echo "Remove unusedPartType variable from parttypes.h"
-		sed -i '/unusedPartType/d' ../parttypes.h
-		sed -i '/PartType with GUID/d' ../parttypes.h
+	if grep "PartType unusedPartType" ../parttypes.h >/dev/null 2>&1 ; then
+		echo "Patch unusedPartType variable in parttypes.h"
+		sed -i 's/PartType unusedPartType/GUIDData unusedPartType/g' ../parttypes.h
+		echo "Add missing assignment operator in parttypes.h"
+		sed -i '/GUIDData & operator=(const GUIDData & orig) {return GUIDData::operator=(orig);}/i\ \ \ GUIDData & operator=(const PartType & orig) {return GUIDData::operator=(orig);}' ../parttypes.h
 	else
 		echo "File ../parttypes.h is already patched."
 	fi
